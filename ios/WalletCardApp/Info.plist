@@ -37,6 +37,8 @@
 	<string>This app needs access to camera to take photos of your wallet cards for secure storage.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to photo library to select existing photos of your wallet cards for secure storage.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
