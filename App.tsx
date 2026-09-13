@@ -12,10 +12,12 @@ import {
   View,
   Text,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
 
+import { getPickedImageUri } from './src/utils/pickerResult';
 import { CardGrid } from './src/components/CardGrid';
 import { CardDetailModal } from './src/components/CardDetailModal';
 import { AddCardModal } from './src/components/AddCardModal';
@@ -107,11 +109,15 @@ const AppContent: React.FC = () => {
         includeBase64: true,
       },
       (response) => {
-        if (response.assets && response.assets[0] && selectedCard) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
+        const result = getPickedImageUri(response);
+        if ('error' in result) {
+          if (result.error) Alert.alert('Photo Error', result.error);
+          return;
+        }
+        if (selectedCard) {
           const updatedCard = {
             ...selectedCard,
-            [side === 'front' ? 'frontImage' : 'backImage']: imageUri,
+            [side === 'front' ? 'frontImage' : 'backImage']: result.uri,
           };
           handleUpdateCard(updatedCard);
           setSelectedCard(updatedCard);
@@ -128,11 +134,13 @@ const AppContent: React.FC = () => {
         includeBase64: true,
       },
       async (response) => {
-        if (response.assets && response.assets[0]) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
-          const next = await StorageService.setPhotoAtIndex(index, imageUri);
-          setPhotos(next);
+        const result = getPickedImageUri(response);
+        if ('error' in result) {
+          if (result.error) Alert.alert('Photo Error', result.error);
+          return;
         }
+        const next = await StorageService.setPhotoAtIndex(index, result.uri);
+        setPhotos(next);
       }
     );
   };

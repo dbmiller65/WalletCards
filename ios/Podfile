@@ -31,5 +31,16 @@ target 'WalletCardApp' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Workaround: fmt 11.0.2 (pinned by RN 0.81) fails to compile under
+    # Xcode's newer C++20 `consteval` enforcement. Building fmt as C++17
+    # avoids the consteval code path.
+    installer.pods_project.targets.each do |target|
+      if target.name == 'fmt'
+        target.build_configurations.each do |config|
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'gnu++17'
+        end
+      end
+    end
   end
 end

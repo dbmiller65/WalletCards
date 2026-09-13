@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { launchImageLibrary, launchCamera, ImagePickerResponse } from 'react-native-image-picker';
 
+import { getPickedImageUri } from '../utils/pickerResult';
+
 interface AddPhotoModalProps {
   visible: boolean;
   onClose: () => void;
@@ -53,10 +55,12 @@ export const AddPhotoModal: React.FC<AddPhotoModalProps> = ({
         includeBase64: true,
       },
       (response: ImagePickerResponse) => {
-        if (response.assets && response.assets[0]) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
-          setPhotoUri(imageUri);
+        const result = getPickedImageUri(response);
+        if ('error' in result) {
+          if (result.error) Alert.alert('Photo Error', result.error);
+          return;
         }
+        setPhotoUri(result.uri);
       }
     );
   };
@@ -69,10 +73,12 @@ export const AddPhotoModal: React.FC<AddPhotoModalProps> = ({
         includeBase64: true,
       },
       (response: ImagePickerResponse) => {
-        if (response.assets && response.assets[0]) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
-          setPhotoUri(imageUri);
+        const result = getPickedImageUri(response);
+        if ('error' in result) {
+          if (result.error) Alert.alert('Photo Error', result.error);
+          return;
         }
+        setPhotoUri(result.uri);
       }
     );
   };
