@@ -6,8 +6,12 @@ import {
   StyleSheet,
   Switch,
   Alert,
+  Linking,
 } from 'react-native';
 import { useBiometric } from '../contexts/BiometricContext';
+
+const PRIVACY_POLICY_URL =
+  'https://github.com/dbmiller65/WalletCards/blob/main/PRIVACY_POLICY.md';
 
 interface BiometricSettingsProps {
   visible: boolean;
@@ -26,6 +30,12 @@ export const BiometricSettings: React.FC<BiometricSettingsProps> = ({
   } = useBiometric();
 
   if (!visible) return null;
+
+  const handleOpenPrivacyPolicy = () => {
+    Linking.openURL(PRIVACY_POLICY_URL).catch(() => {
+      Alert.alert('Error', 'Could not open the privacy policy link.');
+    });
+  };
 
   const handleToggleBiometric = async (enabled: boolean) => {
     if (enabled) {
@@ -92,6 +102,14 @@ export const BiometricSettings: React.FC<BiometricSettingsProps> = ({
               When enabled, you'll need to authenticate with {biometricType || 'biometrics'} each time you open the app. This helps protect your sensitive card information.
             </Text>
           </View>
+
+          <TouchableOpacity
+            style={styles.privacyRow}
+            onPress={handleOpenPrivacyPolicy}
+          >
+            <Text style={styles.privacyText}>Privacy Policy</Text>
+            <Text style={styles.privacyChevron}>›</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -197,5 +215,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6c757d',
     lineHeight: 20,
+  },
+  privacyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 24,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#d2d2d7',
+  },
+  privacyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#007aff',
+  },
+  privacyChevron: {
+    fontSize: 20,
+    color: '#8e8e93',
   },
 });
