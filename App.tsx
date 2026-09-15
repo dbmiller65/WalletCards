@@ -13,11 +13,13 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 import { getPickedImageUri } from './src/utils/pickerResult';
+import { PRIVACY_POLICY_URL } from './src/utils/links';
 import { CardGrid } from './src/components/CardGrid';
 import { CardDetailModal } from './src/components/CardDetailModal';
 import { AddCardModal } from './src/components/AddCardModal';
@@ -174,6 +176,12 @@ const AppContent: React.FC = () => {
     setPhotos(next);
   };
 
+  const handleOpenPrivacyPolicy = () => {
+    Linking.openURL(PRIVACY_POLICY_URL).catch(() => {
+      Alert.alert('Error', 'Could not open the privacy policy link.');
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f2f2f7" />
@@ -257,6 +265,10 @@ const AppContent: React.FC = () => {
         )}
       </View>
 
+      <TouchableOpacity onPress={handleOpenPrivacyPolicy} style={styles.footerLink}>
+        <Text style={styles.footerLinkText}>Privacy Policy</Text>
+      </TouchableOpacity>
+
       <BiometricSettings
         visible={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
@@ -280,6 +292,15 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  footerLink: {
+    alignItems: 'center',
+    paddingVertical: 16,
+  },
+  footerLinkText: {
+    fontSize: 13,
+    color: '#8e8e93',
+    textDecorationLine: 'underline',
   },
   header: {
     flexDirection: 'row',

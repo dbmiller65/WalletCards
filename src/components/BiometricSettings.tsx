@@ -9,9 +9,7 @@ import {
   Linking,
 } from 'react-native';
 import { useBiometric } from '../contexts/BiometricContext';
-
-const PRIVACY_POLICY_URL =
-  'https://github.com/dbmiller65/WalletCards/blob/main/PRIVACY_POLICY.md';
+import { PRIVACY_POLICY_URL } from '../utils/links';
 
 interface BiometricSettingsProps {
   visible: boolean;
