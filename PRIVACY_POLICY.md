@@ -18,7 +18,7 @@ The app may request access to:
 - Photo Library (to select existing images)
 - Face ID / Touch ID (optional, to lock the app)
 
-These permissions are used only to perform the requested action. Content is stored locally on your device. Face ID / Touch ID authentication is handled entirely on your device by iOS; the app never receives, stores, or transmits your biometric data.
+These permissions are used only to perform the requested action. Content is stored locally on your device. Face ID / Touch ID authentication is handled entirely on your device by iOS; the app never receives, stores, or transmits your biometric data.  The app only receives Pass/Fail.
 
 ## Third-Party Sharing
 
