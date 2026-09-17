@@ -258,48 +258,30 @@ export class StorageService {
         backImage: null,
         createdAt: new Date().toISOString(),
       },
-      {
-        id: 'sample-hi-1',
-        type: 'health-insurance',
-        name: 'Insurance',
-        frontImage: require('../../assets/ins_front.jpg'),
-        backImage: null,
-        createdAt: new Date().toISOString(),
-      },
     ];
   }
 
   private static attachSampleImages(cards: Card[]): Card[] {
-    return cards.map(card => {
-      if (card.id === 'sample-dl-1' || card.type === 'library-card') {
-        return {
-          ...card,
-          type: 'library-card',
-          name: 'Library Card',
-          frontImage: require('../../assets/library_card_front.jpg'),
-          backImage: null,
-        };
-      }
+    return cards
+      .filter(card => card.id !== 'sample-hi-1' && card.type !== 'health-insurance')
+      .map(card => {
+        if (card.id === 'sample-dl-1' || card.type === 'library-card') {
+          return {
+            ...card,
+            type: 'library-card',
+            name: 'Library Card',
+            frontImage: require('../../assets/library_card_front.jpg'),
+            backImage: null,
+          };
+        }
 
-      if (card.id === 'sample-hi-1' || card.type === 'health-insurance') {
-        return {
-          ...card,
-          frontImage: require('../../assets/ins_front.jpg'),
-          backImage: null,
-        };
-      }
-
-      return card;
-    });
+        return card;
+      });
   }
 
   private static stripNonSerializableCardImages(cards: Card[]): Card[] {
     return cards.map(card => {
-      const isSample =
-        card.id === 'sample-dl-1' ||
-        card.id === 'sample-hi-1' ||
-        card.type === 'library-card' ||
-        card.type === 'health-insurance';
+      const isSample = card.id === 'sample-dl-1' || card.type === 'library-card';
 
       if (isSample) {
         return {
