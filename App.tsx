@@ -26,9 +26,6 @@ import { AddCardModal } from './src/components/AddCardModal';
 import { AddPhotoModal } from './src/components/AddPhotoModal';
 import { PhotoGrid } from './src/components/PhotoGrid';
 import { PhotoDetailModal } from './src/components/PhotoDetailModal';
-// import { BiometricLockScreen } from './src/components/BiometricLockScreen';
-import { BiometricSettings } from './src/components/BiometricSettings';
-import { BiometricProvider, useBiometric } from './src/contexts/BiometricContext';
 import { StorageService, Card, PhotoSlot } from './src/services/StorageService';
 
 const AppContent: React.FC = () => {
@@ -37,7 +34,6 @@ const AppContent: React.FC = () => {
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const [photos, setPhotos] = useState<PhotoSlot[]>([
     { uri: null, name: null },
@@ -193,9 +189,6 @@ const AppContent: React.FC = () => {
             {activeTab === 'cards' ? 'Your digital wallet' : 'Show off your important photos'}
           </Text>
         </View>
-        <TouchableOpacity style={styles.settingsButton} onPress={() => setShowSettingsModal(true)}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.tabBar}>
@@ -268,21 +261,12 @@ const AppContent: React.FC = () => {
       <TouchableOpacity onPress={handleOpenPrivacyPolicy} style={styles.footerLink}>
         <Text style={styles.footerLinkText}>Privacy Policy</Text>
       </TouchableOpacity>
-
-      <BiometricSettings
-        visible={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
-      />
     </SafeAreaView>
   );
 };
 
 const App: React.FC = () => {
-  return (
-    <BiometricProvider>
-      <AppContent />
-    </BiometricProvider>
-  );
+  return <AppContent />;
 };
 
 const styles = StyleSheet.create({
@@ -322,22 +306,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: '#8e8e93',
-  },
-  settingsButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  settingsIcon: {
-    fontSize: 20,
   },
   tabBar: {
     flexDirection: 'row',
