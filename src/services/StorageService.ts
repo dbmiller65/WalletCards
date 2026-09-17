@@ -252,9 +252,9 @@ export class StorageService {
     return [
       {
         id: 'sample-dl-1',
-        type: 'driver-license',
-        name: 'Driver License',
-        frontImage: require('../../assets/lic_front.jpg'),
+        type: 'library-card',
+        name: 'Library Card',
+        frontImage: require('../../assets/library_card_front.jpg'),
         backImage: null,
         createdAt: new Date().toISOString(),
       },
@@ -271,10 +271,12 @@ export class StorageService {
 
   private static attachSampleImages(cards: Card[]): Card[] {
     return cards.map(card => {
-      if (card.id === 'sample-dl-1' || card.type === 'driver-license') {
+      if (card.id === 'sample-dl-1' || card.type === 'library-card') {
         return {
           ...card,
-          frontImage: require('../../assets/lic_front.jpg'),
+          type: 'library-card',
+          name: 'Library Card',
+          frontImage: require('../../assets/library_card_front.jpg'),
           backImage: null,
         };
       }
@@ -296,7 +298,7 @@ export class StorageService {
       const isSample =
         card.id === 'sample-dl-1' ||
         card.id === 'sample-hi-1' ||
-        card.type === 'driver-license' ||
+        card.type === 'library-card' ||
         card.type === 'health-insurance';
 
       if (isSample) {
