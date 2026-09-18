@@ -27,6 +27,11 @@ interface CardDetailModalProps {
 
 const { width, height } = Dimensions.get('window');
 
+// Only uploaded images (data-URI strings) load asynchronously; bundled
+// require() assets are already available and never need a loading state.
+const isUriImage = (image: unknown): boolean =>
+  typeof image === 'string' && image.length > 0;
+
 export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   visible,
   card,
@@ -42,26 +47,18 @@ export const CardDetailModal: React.FC<CardDetailModalProps> = ({
   const [frontImageLoading, setFrontImageLoading] = useState(false);
   const [backImageLoading, setBackImageLoading] = useState(false);
 
+  // Each image resets only its own loading flag. A shared effect would flag the
+  // untouched image as loading (and hide it) when its sibling changes, since no
+  // new load event fires for an image whose source didn't change.
   useEffect(() => {
     if (!visible) return;
-    if (!card) return;
+    setFrontImageLoading(isUriImage(card?.frontImage));
+  }, [visible, card?.frontImage]);
 
-    if (!card.frontImage) {
-      setFrontImageLoading(false);
-    } else if (typeof card.frontImage === 'string') {
-      setFrontImageLoading(true);
-    } else {
-      setFrontImageLoading(false);
-    }
-
-    if (!card.backImage) {
-      setBackImageLoading(false);
-    } else if (typeof card.backImage === 'string') {
-      setBackImageLoading(true);
-    } else {
-      setBackImageLoading(false);
-    }
-  }, [visible, card?.frontImage, card?.backImage]);
+  useEffect(() => {
+    if (!visible) return;
+    setBackImageLoading(isUriImage(card?.backImage));
+  }, [visible, card?.backImage]);
 
   if (!card) return null;
 

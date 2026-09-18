@@ -8,8 +8,12 @@ import {
   TextInput,
   Image,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { launchImageLibrary, launchCamera, ImagePickerResponse } from 'react-native-image-picker';
+
+import { getPickedImageUri } from '../utils/pickerResult';
+import { useKeyboardOverlap } from '../hooks/useKeyboardOverlap';
 
 interface AddCardModalProps {
   visible: boolean;
@@ -30,6 +34,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
   const [cardName, setCardName] = useState('');
   const [frontImage, setFrontImage] = useState('');
   const [backImage, setBackImage] = useState('');
+  const keyboardOverlap = useKeyboardOverlap();
 
   const resetForm = () => {
     setCardName('');
@@ -54,6 +59,19 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
     );
   };
 
+  const handlePickerResponse = (side: 'front' | 'back', response: ImagePickerResponse) => {
+    const result = getPickedImageUri(response);
+    if ('error' in result) {
+      if (result.error) Alert.alert('Photo Error', result.error);
+      return;
+    }
+    if (side === 'front') {
+      setFrontImage(result.uri);
+    } else {
+      setBackImage(result.uri);
+    }
+  };
+
   const openCamera = (side: 'front' | 'back') => {
     launchCamera(
       {
@@ -61,16 +79,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
         quality: 0.8,
         includeBase64: true,
       },
-      (response: ImagePickerResponse) => {
-        if (response.assets && response.assets[0]) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
-          if (side === 'front') {
-            setFrontImage(imageUri);
-          } else {
-            setBackImage(imageUri);
-          }
-        }
-      }
+      (response: ImagePickerResponse) => handlePickerResponse(side, response)
     );
   };
 
@@ -81,16 +90,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
         quality: 0.8,
         includeBase64: true,
       },
-      (response: ImagePickerResponse) => {
-        if (response.assets && response.assets[0]) {
-          const imageUri = `data:image/jpeg;base64,${response.assets[0].base64}`;
-          if (side === 'front') {
-            setFrontImage(imageUri);
-          } else {
-            setBackImage(imageUri);
-          }
-        }
-      }
+      (response: ImagePickerResponse) => handlePickerResponse(side, response)
     );
   };
 
@@ -124,7 +124,7 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingBottom: keyboardOverlap }]}>
         <View style={styles.header}>
           <Text style={styles.title}>Add New Card</Text>
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
@@ -132,7 +132,12 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
           </TouchableOpacity>
         </View>
 
-        <View style={styles.content}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+        >
           <View style={styles.formGroup}>
             <Text style={styles.label}>Card Name:</Text>
             <TextInput
@@ -179,15 +184,15 @@ export const AddCardModal: React.FC<AddCardModalProps> = ({
               )}
             </View>
           </View>
+        </ScrollView>
 
-          <View style={styles.actions}>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveText}>Save Card</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.actions}>
+          <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveText}>Save Card</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -219,8 +224,10 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#8e8e93',
   },
-  content: {
+  scroll: {
     flex: 1,
+  },
+  content: {
     padding: 24,
   },
   formGroup: {
@@ -272,7 +279,9 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: 12,
-    marginTop: 'auto',
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 24,
   },
   cancelButton: {
     flex: 1,
